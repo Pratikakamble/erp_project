@@ -1,19 +1,18 @@
 @extends('layouts.erp')
-
+@section('title', 'Products')
 @section('content')
     <div class="d-flex justify-content-between align-items-center mb-3">
-        <h2>Product Inventory</h2>
-        <button class="btn btn-success" onclick="showAddModal()">Add Product</button>
+        <h2 class="fw-bold">Product Inventory</h2>
+        <button class="btn btn-success" onclick="showAddModal()"><i class="bi bi-plus"></i> Add Product</button>
     </div>
 
     <table id="products-table" class="table table-bordered table-striped">
         <thead>
-        <tr><th>ID</th><th>Name</th><th>SKU</th><th>Price</th><th>Qty</th><th>Actions</th></tr>
+        <tr><th width="10%">ID</th><th width="25%">Name</th><th width="15%">SKU</th><th width="15%">Price</th><th width="15%">Qty</th><th width="20%">Actions</th></tr>
         </thead>
     </table>
-
     <!-- Modal -->
-    <div class="modal fade" id="productModal" tabindex="-1">
+    <div class="modal fade" id="productModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
         <div class="modal-dialog">
             <form id="productForm">
                 @csrf
@@ -60,6 +59,7 @@
         $(function () {
             table = $('#products-table').DataTable({
                 ajax: "{{ route('products.data') }}",
+                order: [[0, 'desc']],
                 columns: [
                     { data: 'id' },
                     { data: 'name' },
@@ -70,8 +70,9 @@
                         data: null,
                         render: function(data) {
                             return `
-                                <button class="btn btn-sm btn-warning" onclick="editProduct(${data.id}, '${data.name}', '${data.sku}', ${data.price}, ${data.quantity})">Edit</button>
-                                <button class="btn btn-sm btn-danger" onclick="deleteProduct(${data.id})">Delete</button>
+                            <div align="center">
+                                <button class="btn btn-sm btn-warning" onclick="editProduct(${data.id}, '${data.name}', '${data.sku}', ${data.price}, ${data.quantity})"> <i class="bi bi-pencil"></i> Edit</button>
+                                <button class="btn btn-sm btn-danger" onclick="deleteProduct(${data.id})"> <i class="bi bi-trash"></i> Delete</button>
                             `;
                         }
                     }

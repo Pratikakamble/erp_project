@@ -1,7 +1,7 @@
 @extends('layouts.erp')
-
+@section('title', 'Create Sales Order')
 @section('content')
-<h2 class="mb-2"><b>Create Sales Order</b></h2>
+<h2 class="mb-2 fw-bold">Create Sales Order</h2>
 
 <form id="orderForm">
     @csrf
@@ -15,7 +15,7 @@
     <table class="table table-bordered" id="orderItems">
         <thead>
             <tr>
-                <th>Product</th><th>Price</th><th>Qty</th><th>Subtotal</th><th><button type="button" class="btn btn-sm btn-success" id="addRow">+</button></th>
+                <th width="25%">Product</th><th width="25%">Price</th><th width="25%">Qty</th><th width="15%" >Subtotal</th><th width="10%" class="text-center"><button type="button" class="btn btn-sm btn-success" id="addRow">+</button></th>
             </tr>
         </thead>
         <tbody></tbody>
@@ -70,8 +70,8 @@ function addRow() {
                 <input type="number" class="form-control qty" name="quantities[]" value="1" min="1">
                 <div class="text-danger error-quantities"></div>
             </td>
-            <td>₹ <span class="subtotal">0.00</span></td>
-            <td><button type="button" class="btn btn-sm btn-danger removeRow">x</button></td>
+            <td class="text-right">₹ <span class="subtotal">0.00</span></td>
+            <td class="text-center"><button type="button" class="btn btn-sm btn-danger removeRow">x</button></td>
         </tr>
     `;
     $('#orderItems tbody').append(row);

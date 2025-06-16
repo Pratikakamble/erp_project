@@ -1,5 +1,5 @@
 @extends('layouts.erp')
-
+@section('title', 'Sales Invoice')
 @section('content')
 <h2 class="d-flex justify-content-between align-items-center">
     Sales Order #{{ $sales_order->id }}
@@ -17,7 +17,7 @@
 <table class="table table-bordered">
     <thead>
         <tr>
-            <th align="center">#</th>
+            <th class="text-center">#</th>
             <th>Product</th>
             <th>Unit Price (₹)</th>
             <th>Quantity</th>
@@ -45,3 +45,5 @@
 
 <a href="{{ route('sales-orders.index') }}" class="btn btn-secondary">← Back to Orders</a>
 @endsection
+
+

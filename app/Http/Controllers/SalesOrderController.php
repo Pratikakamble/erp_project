@@ -7,6 +7,12 @@ use App\Models\SalesOrder;
 use App\Models\SalesOrderItem;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Response;
+use Illuminate\Http\JsonResponse;
 
 class SalesOrderController extends Controller
 {
