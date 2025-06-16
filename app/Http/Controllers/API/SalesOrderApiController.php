@@ -17,68 +17,81 @@ class SalesOrderApiController extends Controller
         if (Gate::denies('is-admin') && Gate::denies('is-salesperson')) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
-        // Validate that products, quantities, and prices are arrays and have the same count
-        $products = $request->input('products', []);
-        $quantities = $request->input('quantities', []);
-        $prices = $request->input('prices', []);
+        
+        $products = $request->products;
+        $quantities = $request->quantities;
 
-        if (!is_array($products) || !is_array($quantities) || !is_array($prices)) {
+        if (!is_array($products) || !is_array($quantities)) {
             return response()->json([
-            'success' => false,
-            'message' => 'Products, quantities, and prices must be arrays.',
+                'success' => false,
+                'message' => 'Products and quantities must be arrays.',
             ], 422);
         }
 
         $countProducts = count($products);
         $countQuantities = count($quantities);
-        $countPrices = count($prices);
 
         if ($countProducts === 0) {
             return response()->json([
-            'success' => false,
-            'message' => 'At least one product is required.',
+                'success' => false,
+                'message' => 'At least one product is required.',
             ], 422);
         }
 
-        if ($countProducts !== $countQuantities || $countProducts !== $countPrices) {
+        if ($countProducts !== $countQuantities) {
             return response()->json([
-            'success' => false,
-            'message' => 'Products, quantities, and prices must have the same number of items.',
+                'success' => false,
+                'message' => 'Products and quantities must have the same number of items.',
             ], 422);
         }
+
         try {
-            $order = DB::transaction(function () use ($request) {
-                // Load all products by IDs once
-                $products = Product::whereIn('id', $request->products)->get()->keyBy('id');
-                foreach ($request->products as $index => $productId) {
-                    $product = $products->find($productId);
-                    $requestedQty = $request->quantities[$index] ?? 0;
+            $order = DB::transaction(function () use ($request, $products, $quantities) {
+                // Fetch products from DB
+                $productModels = Product::whereIn('id', $products)->get()->keyBy('id');
+
+                $total = 0;
+
+                // Validate stock
+                if(is_array($products)){
+                foreach ($products as $index => $productId) {
+                    $product = $productModels->get($productId);
+                    $requestedQty = $quantities[$index] ?? 0;
 
                     if (!$product || $product->quantity < $requestedQty) {
                         throw ValidationException::withMessages([
                             "products.$index" => "Insufficient stock for " . ($product->name ?? 'Product'),
                         ]);
                     }
+
+                    $total += $requestedQty * $product->price;
                 }
+                }
+
+                // Create order
                 $order = SalesOrder::create([
                     'customer_name' => $request->customer_name,
-                    'total' => $request->total,
+                    'total' => $total,
                 ]);
 
-                // Loop through and create order items
-                foreach ($request->products as $index => $productId) {
-                    $qty = $request->quantities[$index];
-                    $price = $request->prices[$index];
+                // Create order items and decrement stock
+                if(is_array($products)){
+                foreach ($products as $index => $productId) {
+                    $product = $productModels->get($productId);
+                    $qty = $quantities[$index];
+                    $price = $product->price;
+                    $subtotal = $qty * $price;
 
                     SalesOrderItem::create([
                         'sales_order_id' => $order->id,
                         'product_id' => $productId,
                         'quantity' => $qty,
                         'price' => $price,
-                        'subtotal' => $qty * $price,
+                        'subtotal' => $subtotal,
                     ]);
 
-                    $products->get($productId)->decrement('quantity', $qty);
+                    $product->decrement('quantity', $qty);
+                }
                 }
 
                 return $order;
