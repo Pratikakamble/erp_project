@@ -84,8 +84,12 @@ $(document).ready(function () {
     $(document).on('click', '#addRow', addRow);
 
     $(document).on('click', '.removeRow', function () {
-        $(this).closest('tr').remove();
-        recalculateTotals();
+        if( $('tr').length  > 2){
+            $(this).closest('tr').remove();
+            recalculateTotals();
+        }else{
+            alert("Minimum one product is required for Sales Order");
+        }
     });
 
     $(document).on('change', '.product', function () {
