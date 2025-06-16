@@ -34,7 +34,8 @@ cp .env.example .env
 php artisan key:generate
 
 # Configure your DB in .env
-php artisan migrate --seed
+php artisan migrate --seed 
+# php artisan migrate:fresh --seed(to solve duplicate entry error)
 
 php artisan serve
 ```
@@ -69,4 +70,8 @@ php artisan serve
 -   Database transaction ensures rollback on failure
 -   PDF Invoice export using `barryvdh/laravel-dompdf`
 
----
+
+Developed RESTful API
+ GET /api/products – List all products
+ POST /api/sales-orders – Create a new sales order
+ GET /api/sales-orders/{id} – Retrieve a specific sales order with its products and totals
