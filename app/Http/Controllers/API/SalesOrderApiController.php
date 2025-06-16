@@ -2,7 +2,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\StoreSalesOrderRequest;
+use App\Http\Requests\APIRequest;
 use App\Models\Product;
 use App\Models\SalesOrder;
 use App\Models\SalesOrderItem;
@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Gate;
 
 class SalesOrderApiController extends Controller
 {
-    public function store(StoreSalesOrderRequest $request)
+    public function store(APIRequest $request)
     {
         if (Gate::denies('is-admin') && Gate::denies('is-salesperson')) {
             return response()->json(['message' => 'Unauthorized'], 403);
