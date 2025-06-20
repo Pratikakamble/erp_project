@@ -19,9 +19,12 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
+Route::get('/dashboard', [DashboardController::class, 'index'])
+    ->middleware(['auth', 'check-role'])
+    ->name('dashboard');
+    
 
 Route::middleware(['auth', RoleMiddleware::class.':admin'])->group(function () {
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/products', [ProductController::class, 'index'])->name('products.index');
     Route::get('/products/data', [ProductController::class, 'getData'])->name('products.data');
     Route::post('/products', [ProductController::class, 'store'])->name('products.store');
